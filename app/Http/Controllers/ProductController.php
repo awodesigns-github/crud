@@ -14,7 +14,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $product = Product::all();
+        $product = Product::latest();
         return view('product.index', ['product' => $product]);
     }
 
@@ -31,15 +31,14 @@ class ProductController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $data = $request->validate([
+        $request->validate([
             'name' => 'required',
             'description' => 'required'
         ]);
 
-        $product = Product::create($data);
+        Product::create($request->all());
 
-        dd($product);
-        // return redirect()->route('product.index');
+        return redirect()->route('product.index');
     }
 
     /**
@@ -61,17 +60,24 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Product $id)
     {
 
-        return 'foo';
+        $request->validate([
+            'name' => 'required',
+            'description' => 'required'
+        ]);
+
+        $id->update($request->all());
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Product $id)
     {
-        return 'foo';
+        $id->delete();
+
+        return redirect()->route('product.destroy');
     }
 }
